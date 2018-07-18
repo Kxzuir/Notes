@@ -1,0 +1,2 @@
+# Notes
+Naive notes collection
