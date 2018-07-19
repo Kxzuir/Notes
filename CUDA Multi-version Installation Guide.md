@@ -1,6 +1,6 @@
 # CUDA Multi-version Installation Guide
 
-Author: Kxzuir |Rev. 04 | Last update: 2018/7/18
+Author: Kxzuir | Rev. 05 | Last update: 2018/7/20
 
 ## System Requirements
 * Operating System: Ubuntu 16.04, 64bit
@@ -95,17 +95,13 @@ sudo add-apt-repository ppa:ubuntu-toolchain-r/test; sudo apt-get update
 ```
 
 ## Install CUDA 9.2
-1. Get latest packages
+1. Get latest package
    
    https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1604&target_type=runfilelocal
 
 2. Install packages
    ```bash
-   # Replacing xxx to actual filenames
-   sudo ./cuda_9.2.x_xxx.xx_linux.run --toolkit --toolkitpath=/opt/cuda-9.2 --samples --samplespath=/opt/cuda-9.2-samples --silent --override
-   sudo ./cuda_9.2.x_xxx.xx_linux.run --installdir=/opt/cuda-9.2 --accept-eula --silent
-   sudo ./cuda_9.2.x_xxx.xx_linux.run --installdir=/opt/cuda-9.2 --accept-eula --silent
-   sudo ./cuda_9.2.x_xxx.xx_linux.run --installdir=/opt/cuda-9.2 --accept-eula --silent
+   sudo ./cuda_9.2.148_396.37_linux.run --toolkit --toolkitpath=/opt/cuda-9.2 --samples --samplespath=/opt/cuda-9.2-samples --silent --override
    ```
 
 3. Configure gcc
@@ -236,7 +232,7 @@ sudo add-apt-repository ppa:ubuntu-toolchain-r/test; sudo apt-get update
    
 ## Install CUDA 5.5
 
-1. Get archived packages
+1. Get archived package
 
    https://developer.nvidia.com/cuda-toolkit-55-archive
 
@@ -273,7 +269,7 @@ sudo add-apt-repository ppa:ubuntu-toolchain-r/test; sudo apt-get update
 
 ## Install CUDA 6.5
 
-1. Get archived packages
+1. Get archived package
 
    https://developer.nvidia.com/cuda-toolkit-65
 
