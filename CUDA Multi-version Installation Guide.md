@@ -1,6 +1,6 @@
 # CUDA Multi-version Installation Guide
 
-Author: Kxzuir | Rev. 06 | Last update: 2018/08/23
+Author: Kxzuir | Rev. 07 | Last update: 2018/08/24
 
 ## System Requirements
 * Operating System: Ubuntu 16.04, 64bit
@@ -94,6 +94,8 @@ Adding gcc repository:
 ```bash
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test; sudo apt-get update
 ```
+
+You do not need to install all CUDA versions listed below, just what you need. Installation order can be arbitary.
 
 ## Install CUDA 9.2
 1. Get latest package
@@ -331,3 +333,13 @@ sudo add-apt-repository ppa:ubuntu-toolchain-r/test; sudo apt-get update
    cd ~/cuda-6.5-samples
    make
    ```
+   
+## Switch Between CUDA Versions
+
+You may notice a new command like `ldcudaX.X`(`ldcuda4.2`, `ldcuda6.5`, etc.), and that's the switch for different CUDA versions. By default, the system won't load any CUDA version; You need to manually enable specific CUDA version by enter corresponding command, just like each "Build samples" does. Your command will only affect the session it stays, so you can open as many terminals as you want, with each under its own CUDA environment, including `nvcc`, `gcc`, `g++` and related libs.
+
+Of course, if you would like to set a default version, just append a `ldcudaX.X` command in `~/.bashrc`. Later entered command will override default settings.
+
+## Remove CUDA Versions
+
+Since CUDA installation just involves copying files to desired directories, uninstall CUDA is quite easy. For example, if you want to uninstall CUDA-9.2, just remove the two dictionaries `/opt/cuda-9.2` and `/opt/cuda-9.2-samples`. Other versions won't be affected.
