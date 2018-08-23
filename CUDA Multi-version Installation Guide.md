@@ -42,7 +42,7 @@ For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA o
    sudo apt-get install freeglut3-dev libgl1-mesa-dev libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
    ```
    
-   **(Important)** Since we are about to add a new repository carrying various `gcc`/`g++` versions, it's necessary to pin `gcc-5` and `g++-5` to version `5.4.0-6ubuntu1~16.04.10`, or a newer version `5.5.0-12ubuntu1~16.04` will be installed. This version differs kernel's complier, and could prevent driver installation with `--dkms` option. So we need to install `gcc-5` and `g++-5` first, and pin their version to what we need.
+   **(Important)** Since we are about to add a new repository carrying various `gcc`/`g++` versions, it's necessary to pin `gcc-5` and `g++-5` to version `5.4.0-6ubuntu1~16.04.10`, or a newer version `5.5.0-12ubuntu1~16.04` will be installed. This version is higher than the complier version used to build the kernel, and could prevent driver installation when `--dkms` option is on. So we need to install `gcc-5` and `g++-5` first, and pin their version to what we need.
    
    ```bash
    sudo apt-get install gcc-5 g++-5
