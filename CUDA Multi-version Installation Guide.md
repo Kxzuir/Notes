@@ -1,10 +1,10 @@
 # CUDA Multi-version Installation Guide
 
-Author: Kxzuir | Rev. 05 | Last update: 2018/7/20
+Author: Kxzuir | Rev. 06 | Last update: 2018/08/23
 
 ## System Requirements
 * Operating System: Ubuntu 16.04, 64bit
-* An CUDA-capable GPU
+* A CUDA-capable GPU
 * Stable network connection
 ## Driver Pre-installation
 
@@ -18,11 +18,11 @@ sudo reboot
 
 ## Install NVIDIA Driver
 
-For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA on Ubuntu / CentOS / Fedora Linux OS](https://gist.github.com/wangruohui/df039f0dc434d6486f5d4d098aa52d07#install-nvidia-graphics-driver-via-runfile). Brief steps can be summarized as the following steps.
+For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA on Ubuntu / CentOS / Fedora Linux OS](https://gist.github.com/wangruohui/df039f0dc434d6486f5d4d098aa52d07#install-nvidia-graphics-driver-via-runfile). We just extract what we need here.
 
 1. Remove previous installation, in case you have installed driver via  `apt-get ` before.
    
-   This step is optional for newly installed systems.
+   This step is not necessary for newly installed systems.
    
    ```bash
    # Note this might remove your cuda installation as well
@@ -30,18 +30,25 @@ For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA o
    sudo apt-get autoremove
    ```
 
-2. Download the Driver
+2. Download the driver
    https://www.geforce.com/drivers
   
-   Sometimes CUDA package may contain newer driver than the driver page. You may want to extract the driver from the CUDA package (option `--extract`. `--help` for full explanation) for the following steps.
+   Sometimes CUDA package may carry newer driver than the driver page. You may want to extract the driver from CUDA package (option `--extract`. `--help` for full explanation) for the following steps.
 
 3. Install dependencies
 
    ```bash
-   sudo apt-get install build-essential gcc-multilib dkms g++
+   sudo apt-get install build-essential gcc-multilib dkms gcc g++
    sudo apt-get install freeglut3-dev libgl1-mesa-dev libx11-dev libxmu-dev libxi-dev libglu1-mesa libglu1-mesa-dev
    ```
-
+   
+   **(Important)** Since we are about to add a new repository carrying various `gcc`/`g++` versions, it's necessary to pin `gcc-5` and `g++-5` to version `5.4.0-6ubuntu1~16.04.10`, or a newer version `5.5.0-12ubuntu1~16.04` will be installed. This version differs kernel's complier, and could prevent driver installation with `--dkms` option. So we need to install `gcc-5` and `g++-5` first, and pin their version to what we need.
+   
+   ```bash
+   sudo apt-get install gcc-5 g++-5
+   sudo apt-mark hold gcc-5 g++-5
+   ```
+   
 4. Create blacklist for Nouveau driver
 
    Create a file at `/etc/modprobe.d/blacklist-nouveau.conf` with the following contents:
@@ -49,12 +56,6 @@ For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA o
    ```
    blacklist nouveau
    options nouveau modeset=0
-   ```
-   
-   (Optional, but **recommended**) Since we are about to performing last reboot before actual driver installation begins, it's recommended to set an environment variable for better compatibility. This can be done by appending the following line in `/etc/profile`:
-
-   ```bash
-   export IGNORE_CC_MISMATCH=1
    ```
 
    Then execute the following commands to apply settings, and reboot:
