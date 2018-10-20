@@ -1,6 +1,6 @@
 # CUDA Multi-version Installation Guide
 
-Author: Kxzuir | Rev. 08 | Last update: 2018/09/28
+Author: Kxzuir | Rev. 09 | Last update: 2018/10/20
 
 ## System Requirements
 * Operating System: Ubuntu 16.04, 64bit
@@ -91,28 +91,58 @@ For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA o
 
    If a new driver version release later, re-perform step `2`, `5`, `6` and `7`. Previous old driver will be automatically uninstalled in step `6`, with a prompt for confirmation.
    
-## CUDA Pre-installation
+## Version Check
 
-Adding gcc repository:
+1. Version for gcc
 
-```bash
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test; sudo apt-get update
-```
+   The `gcc` compiler is required for development using the CUDA Toolkit. Morever, each CUDA version has its own `gcc` version requirements. The constraint is implemented by putting version check code in `${CUDA_INSTALL_PATH}/include/crt/host_config.h` or `${CUDA_INSTALL_PATH}/include/host_config.h`. You may modify the file to adapt your needs, but in some cases it would cause unexpected behavior.
 
-You do not need to install all CUDA versions listed below, just what you need. Installation order can be arbitary.
+   This tables shows the officially announced and maximum version of `gcc` each CUDA version supported. In this tutorial, we prefer to use the highest version of `gcc` CUDA allowed, shown as "Recommended" column.
 
-CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This link holds all CUDA versions NVIDIA had ever released.
+   | CUDA Version | Annonced | Maximum | Recommended     |
+   |--------------|----------|---------|-----------------|
+   | 4.2          | 4.5.2    | 4.6.x   | 4.6.4 (gcc-4.6) |
+   | 5.5          | 4.7.2    | 4.8.x   | 4.8.5 (gcc-4.8) |
+   | 6.5          | 4.8.2    | 4.8.x   | 4.8.5 (gcc-4.8) |
+   | 7.5          | 4.9.2    | 4.9.x   | 4.9.4 (gcc-4.9) |
+   | 8.0 GA2      | 5.3.1    | -       | -               |
+   | 9.2          | 5.4.0    | 7.x     | 7.3.0 (gcc-7)   |
+   | 10.0         | 5.4.0    | 7.x     | 7.3.0 (gcc-7)   |
+
+   To have access to each `gcc` version, we need to add a repository:
+
+   ```bash
+   sudo add-apt-repository ppa:ubuntu-toolchain-r/test; sudo apt-get update
+   ```
+
+2. Version for CUDA
+
+   You do not need to install all CUDA versions listed below, just what you need. Here we demonstrate the installation process of CUDA-10.0, CUDA-9.2, CUDA-4.2, CUDA-5.5 and CUDA-6.5.
+   
+   Installation order can be arbitary.
+
+   CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This link holds all CUDA versions NVIDIA had ever released.
 
 ## Install CUDA 10.0
 1. Get latest package
    
    https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1604&target_type=runfilelocal
    
-   Note this link always leads to the newest CUDA version. If a newer CUDA version release, the content you see may vary.
-
+   Note this link always leads to the newest CUDA version. If a newer CUDA version releases, the content you see may vary.
+   
+   Or just simply perform:
+   
+   ```bash
+   cd ~
+   wget https://developer.nvidia.com/compute/cuda/10.0/Prod/local_installers/cuda_10.0.130_410.48_linux
+   ```
+   
+   This will directly download the package into your home directionary.
+   
 2. Install packages
 
    ```bash
+   cd ~
    chmod +x cuda_10.0.130_410.48_linux.run
    sudo ./cuda_10.0.130_410.48_linux.run --toolkit --toolkitpath=/opt/cuda-10.0 --samples --samplespath=/opt/cuda-10.0-samples --silent --override
    ```
@@ -121,8 +151,8 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
 
    ```bash
    sudo apt-get install gcc-7 g++-7
-   sudo ln -s /usr/bin/gcc-7 /opt/cuda-10.0/bin/gcc
-   sudo ln -s /usr/bin/g++-7 /opt/cuda-10.0/bin/g++
+   sudo ln -sf /usr/bin/gcc-7 /opt/cuda-10.0/bin/gcc
+   sudo ln -sf /usr/bin/g++-7 /opt/cuda-10.0/bin/g++
    ```
 
 4. Configure environment variables
@@ -133,8 +163,8 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
 5. Build samples
 
    ```bash
-   # Restart the terminal to apply new alias
-   # After restart, loading new environment 
+   cd ~
+   . ~/.bashrc
    ldcuda10.0
    
    # Verify CUDA version. You should see "release 10.0" in the output.
@@ -150,39 +180,31 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
    ```
 
 ## Install CUDA 9.2
-1. Get archived packages
-   
-   https://developer.nvidia.com/cuda-92-download-archive?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1604&target_type=runfilelocal
 
-2. Install packages
-   ```bash
-   sudo ./cuda_9.2.148_396.37_linux.run --toolkit --toolkitpath=/opt/cuda-9.2 --samples --samplespath=/opt/cuda-9.2-samples --silent --override
-   ```
+The process is similar to the installation of CUDA 10.0. We just put the bash script.
+Release page: https://developer.nvidia.com/cuda-92-download-archive?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1604&target_type=runfilelocal
 
-3. Configure gcc
+```bash
+cd ~
+wget https://developer.nvidia.com/compute/cuda/9.2/Prod2/local_installers/cuda_9.2.148_396.37_linux
+wget https://developer.nvidia.com/compute/cuda/9.2/Prod2/patches/1/cuda_9.2.148.1_linux
+sudo ./cuda_9.2.148_396.37_linux.run --toolkit --toolkitpath=/opt/cuda-9.2 --samples --samplespath=/opt/cuda-9.2-samples --silent --override
+sudo ./cuda_9.2.148.1_linux.run --installdir=/opt/cuda-9.2 --silent --accept-eula
 
-   ```bash
-   sudo apt-get install gcc-7 g++-7
-   sudo ln -s /usr/bin/gcc-7 /opt/cuda-9.2/bin/gcc
-   sudo ln -s /usr/bin/g++-7 /opt/cuda-9.2/bin/g++
-   ```
+sudo apt-get install gcc-7 g++-7
+sudo ln -sf /usr/bin/gcc-7 /opt/cuda-9.2/bin/gcc
+sudo ln -sf /usr/bin/g++-7 /opt/cuda-9.2/bin/g++
 
-4. Configure environment variables
+printf "alias ldcuda9.2='export LD_LIBRARY_PATH=/opt/cuda-9.2/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-9.2/bin\${PATH:+:\${PATH}}'" >> ~/.bashrc
 
-   ```bash
-   printf "alias ldcuda9.2='export LD_LIBRARY_PATH=/opt/cuda-9.2/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-9.2/bin\${PATH:+:\${PATH}}'" >> ~/.bashrc
-   ```
-5. Build samples
+. ~/.bashrc
+ldcuda9.2
+cuda-install-samples-9.2.sh ~
+mv ~/NVIDIA_CUDA-9.2_Samples ~/cuda-9.2-samples
+cd ~/cuda-9.2-samples
+make
+```
 
-   ```bash
-   # Restart the terminal
-   ldcuda9.2
-   cuda-install-samples-9.2.sh ~
-   mv ~/NVIDIA_CUDA-9.2_Samples ~/cuda-9.2-samples
-   cd ~/cuda-9.2-samples
-   make
-   ```
-   
 ## Install CUDA 4.2
 1. Get archived packages
 
@@ -204,8 +226,8 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
 
    ```bash
    sudo apt-get install gcc-4.6 g++-4.6
-   sudo ln -s /usr/bin/gcc-4.6 /opt/cuda-4.2/bin/gcc
-   sudo ln -s /usr/bin/g++-4.6 /opt/cuda-4.2/bin/g++
+   sudo ln -sf /usr/bin/gcc-4.6 /opt/cuda-4.2/bin/gcc
+   sudo ln -sf /usr/bin/g++-4.6 /opt/cuda-4.2/bin/g++
    ```
 
 4. Configure environment variables
@@ -221,7 +243,7 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
    cd ~/cuda-4.2-samples
    ```
    
-   Before building samples, fix these errors which may cause linkage error:
+   Before building samples, fix these errors which may cause linking error:
 
    In `./C/common/common.mk` and `./CUDALibraries/common/common_cudalib.mk`, lines like:
    
@@ -279,7 +301,7 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
 6. Build samples
 
    ```bash
-   # Restart the terminal
+   . ~/.bashrc
    ldcuda4.2
    cd ~/cuda-4.2-samples
    make
@@ -301,8 +323,8 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
 
    ```bash
    sudo apt-get install gcc-4.8 g++-4.8
-   sudo ln -s /usr/bin/gcc-4.8 /opt/cuda-5.5/bin/gcc
-   sudo ln -s /usr/bin/g++-4.8 /opt/cuda-5.5/bin/g++
+   sudo ln -sf /usr/bin/gcc-4.8 /opt/cuda-5.5/bin/gcc
+   sudo ln -sf /usr/bin/g++-4.8 /opt/cuda-5.5/bin/g++
    ```
 
 4. Configure environment variables
@@ -314,7 +336,7 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
 5. Build samples
 
    ```bash
-   # Restart the terminal
+   . ~/.bashrc
    ldcuda5.5
    /opt/cuda-5.5/bin/cuda-install-samples-5.5.sh  ~
    mv ~/NVIDIA_CUDA-5.5_Samples ~/cuda-5.5-samples
@@ -338,8 +360,8 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
 
    ```bash
    sudo apt-get install gcc-4.8 g++-4.8
-   sudo ln -s /usr/bin/gcc-4.8 /opt/cuda-6.5/bin/gcc
-   sudo ln -s /usr/bin/g++-4.8 /opt/cuda-6.5/bin/g++
+   sudo ln -sf /usr/bin/gcc-4.8 /opt/cuda-6.5/bin/gcc
+   sudo ln -sf /usr/bin/g++-4.8 /opt/cuda-6.5/bin/g++
    ```
 
 4. Configure environment variables
@@ -380,7 +402,7 @@ CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This li
 6. Build samples
 
    ```bash
-   # Restart the terminal
+   . ~/.bashrc
    ldcuda6.5
    cd ~/cuda-6.5-samples
    make
