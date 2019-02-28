@@ -1,6 +1,6 @@
 # CUDA Multi-version Installation Guide
 
-Author: Kxzuir | Rev. 09 | Last update: 2018/10/20
+Author: Kxzuir | Rev. 10 | Last update: 2019/02/28
 
 ## System Requirements
 * Operating System: Ubuntu 16.04, 64bit
@@ -31,9 +31,12 @@ For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA o
    ```
 
 2. Download the driver
-   https://www.geforce.com/drivers
+
+   https://www.nvidia.com/object/unix.html
   
    Sometimes CUDA package may carry newer driver than the driver page. You may want to extract the driver from CUDA package (option `--extract`. `--help` for full explanation) for the following steps.
+   
+   At the time this tutorial was updated, the newest driver version is `418.53` and the driver package is `NVIDIA-Linux-x86_64-418.43.run`. If a newer driver releases, the package you see may vary.
 
 3. Install dependencies
 
@@ -72,17 +75,23 @@ For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA o
    sudo systemctl stop lightdm
    ```
 
-6. Excuting the runfile to start installation process
+6. Execute the runfile to start the installation process
 
    ```bash
-   chmod +x NVIDIA-Linux-x86_64-410.57.run
-   sudo ./NVIDIA-Linux-x86_64-410.57.run --dkms
+   chmod +x NVIDIA-Linux-x86_64-418.43.run
+   sudo ./NVIDIA-Linux-x86_64-418.43.run --dkms
    ```
    
-   **(Important)** Option `--no-opengl-files` must be added if non-NVIDIA (AMD or Intel) graphics are used for display while NVIDIA graphics are used for computation.
+   **(Important)** Option `--no-opengl-files` must be added (i.e., `sudo ./NVIDIA-Linux-x86_64-418.43.run --dkms --no-opengl-files`)if non-NVIDIA (AMD or Intel) graphics are used for display while NVIDIA graphics are used for computation.
 
-7. Reboot the system
+7. Restart lightdm, or simply reboot to make everything retuned
 
+   ```bash
+   sudo systemctl start lightdm
+   ```
+   
+   or
+   
    ```bash
    sudo reboot
    ```
@@ -95,19 +104,21 @@ For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA o
 
 1. Version for gcc
 
-   The `gcc` compiler is required for development using the CUDA Toolkit. Morever, each CUDA version has its own `gcc` version requirements. The constraint is implemented by putting version check code in `${CUDA_INSTALL_PATH}/include/crt/host_config.h` or `${CUDA_INSTALL_PATH}/include/host_config.h`. You may modify the file to adapt your needs, but in some cases it would cause unexpected behavior.
+   The `gcc` compiler is required for development using the CUDA Toolkit. Moreove, each CUDA version has its own `gcc` version requirements. The constraint is implemented by putting version check code in `${CUDA_INSTALL_PATH}/include/crt/host_config.h` or `${CUDA_INSTALL_PATH}/include/host_config.h`. You may modify the file to adapt your needs, but in some cases it would cause unexpected behavior.
 
    This tables shows the officially announced and maximum version of `gcc` each CUDA version supported. In this tutorial, we prefer to use the highest version of `gcc` CUDA allowed, shown as "Recommended" column.
 
-   | CUDA Version | Annonced | Maximum | Recommended     |
-   |--------------|----------|---------|-----------------|
-   | 4.2          | 4.5.2    | 4.6.x   | 4.6.4 (gcc-4.6) |
-   | 5.5          | 4.7.2    | 4.8.x   | 4.8.5 (gcc-4.8) |
-   | 6.5          | 4.8.2    | 4.8.x   | 4.8.5 (gcc-4.8) |
-   | 7.5          | 4.9.2    | 4.9.x   | 4.9.4 (gcc-4.9) |
-   | 8.0 GA2      | 5.3.1    | -       | -               |
-   | 9.2          | 5.4.0    | 7.x     | 7.3.0 (gcc-7)   |
-   | 10.0         | 5.4.0    | 7.x     | 7.3.0 (gcc-7)   |
+   | CUDA Version | Announced | Maximum | Recommended     |
+   |--------------|-----------|---------|-----------------|
+   | 4.2          | 4.5.2     | 4.6.x   | 4.6.4 (gcc-4.6) |
+   | 5.5          | 4.7.2     | 4.8.x   | 4.8.5 (gcc-4.8) |
+   | 6.5          | 4.8.2     | 4.8.x   | 4.8.5 (gcc-4.8) |
+   | 7.5          | 4.9.2     | 4.9.x   | 4.9.4 (gcc-4.9) |
+   | 8.0 GA2      | 5.3.1     | -       | -               |
+   | 9.0          | 5.3.1     | 6.x     | 6.5.0 (gcc-6)   |
+   | 9.2          | 5.4.0     | 7.x     | 7.4.0 (gcc-7)   |
+   | 10.0         | 5.4.0     | 7.x     | 7.4.0 (gcc-7)   |
+   | 10.1         | 5.4.0     | 8.x     | 8.1.0 (gcc-8)   |
 
    To have access to each `gcc` version, we need to add a repository:
 
@@ -117,13 +128,13 @@ For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA o
 
 2. Version for CUDA
 
-   You do not need to install all CUDA versions listed below, just what you need. Here we demonstrate the installation process of CUDA-10.0, CUDA-9.2, CUDA-4.2, CUDA-5.5 and CUDA-6.5.
+   You do not need to install all CUDA versions listed below, just what you need. Here we demonstrate the installation process of CUDA-10.1, CUDA-9.2, CUDA-4.2, CUDA-5.5 and CUDA-6.5.
    
    Installation order can be arbitary.
 
    CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive. This link holds all CUDA versions NVIDIA had ever released.
 
-## Install CUDA 10.0
+## Install CUDA 10.1
 1. Get latest package
    
    https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1604&target_type=runfilelocal
@@ -134,45 +145,47 @@ For detailed explanation, refer to the article [Install NVIDIA Driver and CUDA o
    
    ```bash
    cd ~
-   wget https://developer.nvidia.com/compute/cuda/10.0/Prod/local_installers/cuda_10.0.130_410.48_linux
+   wget https://developer.nvidia.com/compute/cuda/10.1/Prod/local_installers/cuda_10.1.105_418.39_linux.run
    ```
    
-   This will directly download the package into your home directionary.
+   This will directly download the package into your home dictionary.
    
-2. Install packages
+2. Install package
 
    ```bash
    cd ~
-   chmod +x cuda_10.0.130_410.48_linux.run
-   sudo ./cuda_10.0.130_410.48_linux.run --toolkit --toolkitpath=/opt/cuda-10.0 --samples --samplespath=/opt/cuda-10.0-samples --silent --override
+   chmod +x cuda_10.1.105_418.39_linux.run
+   sudo ./cuda_10.1.105_418.39_linux.run --toolkit --toolkitpath=/opt/cuda-10.1 --silent --override
    ```
 
 3. Configure gcc
 
+   Note the gcc/g++ version must satisfy the constraint listed above. In most cases, we can just pick up the highest version for most optimization. Here in CUDA-10.1, gcc-8/g++-8 is the best choice.
+
    ```bash
-   sudo apt-get install gcc-7 g++-7
-   sudo ln -sf /usr/bin/gcc-7 /opt/cuda-10.0/bin/gcc
-   sudo ln -sf /usr/bin/g++-7 /opt/cuda-10.0/bin/g++
+   sudo apt-get install gcc-8 g++-8
+   sudo ln -sf /usr/bin/gcc-8 /opt/cuda-10.1/bin/gcc
+   sudo ln -sf /usr/bin/g++-8 /opt/cuda-10.1/bin/g++
    ```
 
 4. Configure environment variables
 
    ```bash
-   printf "alias ldcuda10.0='export LD_LIBRARY_PATH=/opt/cuda-10.0/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-10.0/bin\${PATH:+:\${PATH}}'" >> ~/.bashrc
+   printf "\nalias ldcuda10.1='export LD_LIBRARY_PATH=/opt/cuda-10.1/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-10.1/bin\${PATH:+:\${PATH}}'\n" >> ~/.bashrc
    ```
 5. Build samples
 
    ```bash
    cd ~
    . ~/.bashrc
-   ldcuda10.0
+   ldcuda10.1
    
-   # Verify CUDA version. You should see "release 10.0" in the output.
+   # Verify CUDA version. You should see "release 10.1" in the output.
    nvcc -V
    
    # Copy CUDA samples to your home dictionary and build there
-   cuda-install-samples-10.0.sh ~
-   mv ~/NVIDIA_CUDA-10.0_Samples ~/cuda-10.0-samples
+   cuda-install-samples-10.1.sh ~
+   mv ~/NVIDIA_CUDA-10.1_Samples ~/cuda-10.1-samples
    cd ~/cuda-10.0-samples
    make
    
@@ -188,14 +201,14 @@ Release page: https://developer.nvidia.com/cuda-92-download-archive?target_os=Li
 cd ~
 wget https://developer.nvidia.com/compute/cuda/9.2/Prod2/local_installers/cuda_9.2.148_396.37_linux
 wget https://developer.nvidia.com/compute/cuda/9.2/Prod2/patches/1/cuda_9.2.148.1_linux
-sudo ./cuda_9.2.148_396.37_linux.run --toolkit --toolkitpath=/opt/cuda-9.2 --samples --samplespath=/opt/cuda-9.2-samples --silent --override
+sudo ./cuda_9.2.148_396.37_linux.run --toolkit --toolkitpath=/opt/cuda-9.2 --silent --override
 sudo ./cuda_9.2.148.1_linux.run --installdir=/opt/cuda-9.2 --silent --accept-eula
 
 sudo apt-get install gcc-7 g++-7
 sudo ln -sf /usr/bin/gcc-7 /opt/cuda-9.2/bin/gcc
 sudo ln -sf /usr/bin/g++-7 /opt/cuda-9.2/bin/g++
 
-printf "alias ldcuda9.2='export LD_LIBRARY_PATH=/opt/cuda-9.2/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-9.2/bin\${PATH:+:\${PATH}}'" >> ~/.bashrc
+printf "\nalias ldcuda9.2='export LD_LIBRARY_PATH=/opt/cuda-9.2/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-9.2/bin\${PATH:+:\${PATH}}'\n" >> ~/.bashrc
 
 . ~/.bashrc
 ldcuda9.2
@@ -210,7 +223,7 @@ make
 
    https://developer.nvidia.com/cuda-toolkit-42-archive
 
-2. Inatall packages
+2. Install packages
 
    ```bash
    sudo ./cudatoolkit_4.2.9_linux_64_ubuntu11.04.run
@@ -233,7 +246,7 @@ make
 4. Configure environment variables
 
    ```bash
-   printf "alias ldcuda4.2='export LD_LIBRARY_PATH=/opt/cuda-4.2/lib64:/opt/cuda-4.2/lib\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-4.2/bin\${PATH:+:\${PATH}}; export CUDA_INSTALL_PATH=/opt/cuda-4.2'" >> ~/.bashrc
+   printf "\nalias ldcuda4.2='export LD_LIBRARY_PATH=/opt/cuda-4.2/lib64:/opt/cuda-4.2/lib\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-4.2/bin\${PATH:+:\${PATH}}; export CUDA_INSTALL_PATH=/opt/cuda-4.2'\n" >> ~/.bashrc
    ```
 
 5. Repair samples
@@ -255,37 +268,37 @@ make
 
    In `./CUDALibraries/src`, modify Makefile in the following places:
 
-   `boxFilterNPP/Makefile:41`
+   `boxFilterNPP/Makefile:41` to
 
    ```makefile
    $(CXX) $(INC) -o boxFilterNPP boxFilterNPP.cpp $(LIB) -lUtilNPP_$(LIB_ARCH) -lfreeimage$(FREEIMAGELIBARCH)
    ```
 
-   `imageSegmentationNPP/Makefile:41`
+   `imageSegmentationNPP/Makefile:41` to
 
    ```makefile
    $(CXX) $(INC) -o imageSegmentationNPP imageSegmentationNPP.cpp $(LIB) -lUtilNPP_$(LIB_ARCH) -lfreeimage$(FREEIMAGELIBARCH)
    ```
 
-   `freeImageInteropNPP/Makefile:41`
+   `freeImageInteropNPP/Makefile:41` to
 
    ```makefile
    $(CXX) $(INC) -o freeImageInteropNPP freeImageInteropNPP.cpp $(LIB) -lUtilNPP_$(LIB_ARCH) -lfreeimage$(FREEIMAGELIBARCH)
    ```
 
-   `histEqualizationNPP/Makefile:41`
+   `histEqualizationNPP/Makefile:41` to
 
    ```makefile
    $(CXX) $(INC) -o histEqualizationNPP histEqualizationNPP.cpp $(LIB) -lUtilNPP_$(LIB_ARCH) -lfreeimage$(FREEIMAGELIBARCH)
    ```
 
-   `randomFog/Makefile`, Add
+   `randomFog/Makefile`, add
 
    ```makefile
    USERENDERCHECKGL := 1
    ```
 
-   Modify`./CUDALibraries/common_cudalib.mk:256` to
+   Modify `./CUDALibraries/common_cudalib.mk:256` to
 
    ```makefile
    RENDERCHECKGLLIB := -L../../../C/lib -lrendercheckgl_$(LIB_ARCH)$(LIBSUFFIX)
@@ -316,7 +329,7 @@ make
 2. Install packages
 
    ```bash
-   sudo ./cuda_5.5.22_linux_64.run -toolkit -toolkitpath=/opt/cuda-5.5 -samples -samplespath=/opt/cuda-5.5-samples -silent -override
+   sudo ./cuda_5.5.22_linux_64.run -toolkit -toolkitpath=/opt/cuda-5.5 -silent -override
    ```
 
 3. Configure gcc
@@ -330,7 +343,7 @@ make
 4. Configure environment variables
 
    ```bash
-   printf "alias ldcuda5.5='export LD_LIBRARY_PATH=/opt/cuda-5.5/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-5.5/bin\${PATH:+:\${PATH}}'" >> ~/.bashrc
+   printf "\nalias ldcuda5.5='export LD_LIBRARY_PATH=/opt/cuda-5.5/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-5.5/bin\${PATH:+:\${PATH}}'\n" >> ~/.bashrc
    ```
 
 5. Build samples
@@ -338,7 +351,7 @@ make
    ```bash
    . ~/.bashrc
    ldcuda5.5
-   /opt/cuda-5.5/bin/cuda-install-samples-5.5.sh  ~
+   cuda-install-samples-5.5.sh ~
    mv ~/NVIDIA_CUDA-5.5_Samples ~/cuda-5.5-samples
    cd ~/cuda-5.5-samples
    make
@@ -353,7 +366,7 @@ make
 2. Install packages
 
    ```bash
-   sudo ./cuda_6.5.19_linux_64.run -toolkit -toolkitpath=/opt/cuda-6.5 -samples -samplespath=/opt/cuda-6.5-samples -silent -override
+   sudo ./cuda_6.5.19_linux_64.run -toolkit -toolkitpath=/opt/cuda-6.5 -silent -override
    ```
 
 3. Configure gcc
@@ -367,13 +380,13 @@ make
 4. Configure environment variables
 
    ```bash
-   printf "alias ldcuda6.5='export LD_LIBRARY_PATH=/opt/cuda-6.5/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-6.5/bin\${PATH:+:\${PATH}}'" >> ~/.bashrc
+   printf "\nalias ldcuda6.5='export LD_LIBRARY_PATH=/opt/cuda-6.5/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}; export PATH=/opt/cuda-6.5/bin\${PATH:+:\${PATH}}'\n" >> ~/.bashrc
    ```
 
 5. Repair samples
 
    ```bash
-   /opt/cuda-6.5/bin/cuda-install-samples-6.5.sh  ~
+   /opt/cuda-6.5/bin/cuda-install-samples-6.5.sh ~
    mv ~/NVIDIA_CUDA-6.5_Samples ~/cuda-6.5-samples
    cd ~/cuda-6.5-samples
    ```
@@ -381,16 +394,16 @@ make
    Before build samples, modify `./common/findglib.mk:57` to
 
    ```makefile
-   UBUNTU_PKG_NAME = "nvidia-390"
+   UBUNTU_PKG_NAME = "nvidia-418"
    ```
 
-   Note `410` is the currently installed driver version. Change it in case you have any newer version. 
+   Note `418` is the currently installed driver version. Change it in case you have any newer version. 
 
    Create the following symbolic links:
 
    ```bash
-   sudo ln -s /usr/lib/nvidia-410/libnvcuvid.so /opt/cuda-6.5/lib64/libnvcuvid.so
-   sudo ln -s /usr/lib/nvidia-410/libnvcuvid.so.1 /opt/cuda-6.5/lib64/libnvcuvid.so.1
+   sudo ln -s /usr/lib/nvidia-418/libnvcuvid.so /opt/cuda-6.5/lib64/libnvcuvid.so
+   sudo ln -s /usr/lib/nvidia-418/libnvcuvid.so.1 /opt/cuda-6.5/lib64/libnvcuvid.so.1
    ```
 
    And modify `./6_Advanced/shfl_scan/Makefile:84` to
@@ -416,4 +429,4 @@ Of course, if you would like to set a default version, just append a `ldcudaX.X`
 
 ## Remove CUDA Versions
 
-Since CUDA installation just involves copying files to desired directories, uninstall CUDA is quite easy. For example, if you want to uninstall CUDA-10.0, just remove the two dictionaries `/opt/cuda-10.0` and `/opt/cuda-10.0-samples` (also, `~/cuda-10.0-samples`, where you tested your complier). Other versions won't be affected.
+Since CUDA installation just involves copying files to desired directories, uninstall CUDA is quite easy. For example, if you want to uninstall CUDA-10.1, just remove the dictionary `/opt/cuda-10.1` (also, `~/cuda-10.1-samples`, where you tested your complier; and for CUDA-4.2, also `/opt/cuda-4.2-samples`). Other versions won't be affected.
